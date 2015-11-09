@@ -2,12 +2,17 @@ package resttest
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 const TRANSACTIONS_PAGE_URL = "http://resttest.bench.co/transactions/%d.json"
+
+// Limit how many pages we support
+const MAX_PAGE = 999
 
 type Transaction struct {
 	Amount string `json:"Amount"`
@@ -19,19 +24,36 @@ type TransactionsPage struct {
 }
 
 func Balance() (balance float32, err error) {
-	// TODO : Get more than one page
-	page := 1
-	body, err := transactionPageJson(page)
-	if err != nil {
-		return 0.0, err
+	var transactions int
+	var sum float32
+	advertisedTransactions := -1
+	for page := 1; page == 1 || transactions < advertisedTransactions; page++ {
+		var tp TransactionsPage
+		tp, err = transactionsPage(page)
+		if err != nil {
+			return 0.0, err
+		}
+		if page == 1 {
+			advertisedTransactions = tp.TotalCount
+		}
+		for _, t := range tp.Transactions {
+			// ParseFloat return float64
+			var amount float64
+			amount, err = strconv.ParseFloat(t.Amount, 32)
+			if err != nil {
+				return
+			}
+			sum += float32(amount)
+			transactions += 1
+		}
+		if page == MAX_PAGE {
+			return 0.0, errors.New("Exceeded MAX_PAGE")
+		}
 	}
-	// TODO : Remove this
-	fmt.Printf("%s\n", body)
-	// TODO : Replace fake value
-	return 1.0, nil
+	return sum, nil
 }
 
-func transactionPage(page int) (tp TransactionsPage, err error) {
+func transactionsPage(page int) (tp TransactionsPage, err error) {
 	var j []byte
 	if j, err = transactionPageJson(page); err != nil {
 		return
