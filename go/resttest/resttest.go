@@ -9,8 +9,7 @@ import (
 	"strconv"
 )
 
-//const TRANSACTIONS_PAGE_URL = "http://resttest.bench.co/transactions/%d.json"
-const TRANSACTIONS_PAGE_URL = "http://0.0.0.0:8000/transactions/%d.json"
+const TRANSACTIONS_PAGE_URL = "http://resttest.bench.co/transactions/%d.json"
 
 // Limit how many pages we support
 const MAX_PAGE = 999
