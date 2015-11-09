@@ -9,7 +9,8 @@ import (
 	"strconv"
 )
 
-const TRANSACTIONS_PAGE_URL = "http://resttest.bench.co/transactions/%d.json"
+//const TRANSACTIONS_PAGE_URL = "http://resttest.bench.co/transactions/%d.json"
+const TRANSACTIONS_PAGE_URL = "http://0.0.0.0:8000/transactions/%d.json"
 
 // Limit how many pages we support
 const MAX_PAGE = 999
@@ -23,9 +24,9 @@ type TransactionsPage struct {
 	Transactions []Transaction
 }
 
-func Balance() (balance float32, err error) {
+func Balance() (balance float64, err error) {
 	var transactions int
-	var sum float32
+	var sum float64
 	advertisedTransactions := -1
 	for page := 1; page == 1 || transactions < advertisedTransactions; page++ {
 		var tp TransactionsPage
@@ -39,11 +40,11 @@ func Balance() (balance float32, err error) {
 		for _, t := range tp.Transactions {
 			// ParseFloat return float64
 			var amount float64
-			amount, err = strconv.ParseFloat(t.Amount, 32)
+			amount, err = strconv.ParseFloat(t.Amount, 64)
 			if err != nil {
 				return
 			}
-			sum += float32(amount)
+			sum += amount
 			transactions += 1
 		}
 		if page == MAX_PAGE {
