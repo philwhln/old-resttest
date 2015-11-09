@@ -25,33 +25,29 @@ type TransactionsPage struct {
 }
 
 func Balance() (balance float64, err error) {
-	var transactions int
-	var sum float64
-	advertisedTransactions := -1
-	for page := 1; page == 1 || transactions < advertisedTransactions; page++ {
+	var count int
+	totalCount := -1
+	for page := 1; page == 1 || count < totalCount; page++ {
 		var tp TransactionsPage
+		var sum float64
+		if page > MAX_PAGE {
+			return balance, errors.New("Exceeded MAX_PAGE")
+		}
 		tp, err = transactionsPage(page)
 		if err != nil {
 			return 0.0, err
 		}
 		if page == 1 {
-			advertisedTransactions = tp.TotalCount
+			totalCount = tp.TotalCount
 		}
-		for _, t := range tp.Transactions {
-			// ParseFloat return float64
-			var amount float64
-			amount, err = strconv.ParseFloat(t.Amount, 64)
-			if err != nil {
-				return
-			}
-			sum += amount
-			transactions += 1
+		sum, err = sumTransactions(tp.Transactions)
+		if err != nil {
+			return balance, err
 		}
-		if page == MAX_PAGE {
-			return 0.0, errors.New("Exceeded MAX_PAGE")
-		}
+		balance += sum
+		count += len(tp.Transactions)
 	}
-	return sum, nil
+	return balance, nil
 }
 
 func transactionsPage(page int) (tp TransactionsPage, err error) {
@@ -72,4 +68,16 @@ func transactionPageJson(page int) (json []byte, err error) {
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	return body, err
+}
+
+func sumTransactions(transactions []Transaction) (sum float64, err error) {
+	for _, t := range transactions {
+		var amount float64
+		amount, err = strconv.ParseFloat(t.Amount, 64)
+		if err != nil {
+			return sum, err
+		}
+		sum += amount
+	}
+	return sum, nil
 }
