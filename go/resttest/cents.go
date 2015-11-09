@@ -4,8 +4,10 @@ import (
 	"fmt"
 )
 
+// Money value as cents (eg. $12.34 == 1234c)
 type Cents int64
 
+// Stringify cents as dollars and pennies (eg. 1234 => "12.34")
 func (cents Cents) String() string {
 	sign := ""
 	if cents < 0 {

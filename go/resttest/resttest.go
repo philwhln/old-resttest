@@ -23,6 +23,8 @@ type TransactionsPage struct {
 	Transactions []Transaction
 }
 
+// Page through the resttest API, calculating the overview total balance
+// from the transactions amounts listed there.
 func Balance() (balance Cents, err error) {
 	var count int
 	totalCount := -1
@@ -49,6 +51,8 @@ func Balance() (balance Cents, err error) {
 	return balance, nil
 }
 
+// Fetch the data for specific page of resttest API in a structured
+// formated
 func transactionsPage(page int) (tp TransactionsPage, err error) {
 	var j []byte
 	if j, err = transactionPageJson(page); err != nil {
@@ -58,6 +62,7 @@ func transactionsPage(page int) (tp TransactionsPage, err error) {
 	return
 }
 
+// Fetch the json blob for a specific page of the resttest API
 func transactionPageJson(page int) (json []byte, err error) {
 	url := fmt.Sprintf(TRANSACTIONS_PAGE_URL, page)
 	resp, err := http.Get(url)
@@ -69,6 +74,7 @@ func transactionPageJson(page int) (json []byte, err error) {
 	return body, err
 }
 
+// Given an array of transactions, calculate the sum
 func sumTransactions(transactions []Transaction) (sum Cents, err error) {
 	for _, t := range transactions {
 		var dollars float64
