@@ -20,5 +20,5 @@ $ go run go/main.go
 18377.16
 ```
 
-Both output the same value luckily, although the Go implementation of obviously much much faster. Also, the Bash implementation is not as robust, less easily expensible and I'm not sure how well `bc` it handles rounding errors. I assume its using float for internal representation.
+Both output the same value luckily, although the Go implementation of obviously much much faster. Also, the Bash implementation is not as robust, less easily expensible and I'm not sure how well `bc` handles rounding errors. I assume its using float for internal representation.
 
