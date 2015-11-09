@@ -24,18 +24,18 @@ type TransactionsPage struct {
 	Transactions []Transaction
 }
 
-func Balance() (balance float64, err error) {
+func Balance() (balance Cents, err error) {
 	var count int
 	totalCount := -1
 	for page := 1; page == 1 || count < totalCount; page++ {
 		var tp TransactionsPage
-		var sum float64
+		var sum Cents
 		if page > MAX_PAGE {
 			return balance, errors.New("Exceeded MAX_PAGE")
 		}
 		tp, err = transactionsPage(page)
 		if err != nil {
-			return 0.0, err
+			return balance, err
 		}
 		if page == 1 {
 			totalCount = tp.TotalCount
@@ -70,14 +70,17 @@ func transactionPageJson(page int) (json []byte, err error) {
 	return body, err
 }
 
-func sumTransactions(transactions []Transaction) (sum float64, err error) {
+func sumTransactions(transactions []Transaction) (sum Cents, err error) {
 	for _, t := range transactions {
-		var amount float64
-		amount, err = strconv.ParseFloat(t.Amount, 64)
+		var dollars float64
+		var cents Cents
+		dollars, err = strconv.ParseFloat(t.Amount, 64)
 		if err != nil {
 			return sum, err
 		}
-		sum += amount
+		cents = Cents(dollars * 100.0)
+		// XXX Check for int64 overflow
+		sum += cents
 	}
 	return sum, nil
 }
