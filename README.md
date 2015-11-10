@@ -44,3 +44,18 @@ $ go run go/daily.go
 TOTAL     	18377.16
 ```
 
+## Tests
+
+resttest package includes some tests.
+
+```
+$ cd go/resttest
+$ go test -v
+=== RUN   TestCentsString
+--- PASS: TestCentsString (0.00s)
+=== RUN   TestSumTransactions
+--- PASS: TestSumTransactions (0.00s)
+PASS
+ok  	_/Users/phil/src/resttest/go/resttest	0.009s
+```
+
